@@ -1,22 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import { Button } from "@/components/ui/buttons";
+import { Button } from "@/components/ui/button";
 
-// Manajemen state eksternal untuk trigger dari luar komponen
-const modalRegistry = {
+const states = {
   setState: null,
   changeState(data) {
-    if (this.setState) {
-      this.setState((prevData) => ({ ...prevData, ...data }));
-    }
+    if (!this.setState) return;
+    this.setState((prevData) => {
+      return {
+        ...prevData,
+        ...data,
+      };
+    });
   },
 };
 
-// Fungsi internal untuk menutup modal
 const handleClose = () => {
-  modalRegistry.changeState({ open: false });
+  states.changeState({
+    open: false,
+  });
 };
 
 const Modals = () => {
@@ -25,82 +29,66 @@ const Modals = () => {
     header: "ini header",
     message: "ini message",
     size: "md",
-    footer: null,
+    footer: "",
     onClose: handleClose,
     closable: true,
   });
 
-  // Daftarkan setter state ke registry eksternal setelah komponen mount
-  useEffect(() => {
-    modalRegistry.setState = setData;
-    return () => {
-      modalRegistry.setState = null; // Cleanup saat unmount
-    };
-  }, []);
+  states.setState = setData;
 
   const styles = `
     .modal-backdrop-dark {
       opacity: 0.8 !important;
       background-color: #000;
-    }
-  `;
-
-  // Tentukan fungsi penutup yang aman
-  const activeCloseAction = data.closable
-    ? data.onClose || handleClose
-    : undefined;
+    }`;
 
   return (
     <>
       <style>{styles}</style>
       <Modal
         show={data.open}
-        onHide={activeCloseAction}
+        onHide={data.closable ? data.onClose : undefined}
         size={data.size}
-        backdrop={data.closable ? "static" : true}
-        keyboard={data.closable}
-        centered
+        backdrop="static"
+        keyboard={false}
       >
-        {/* HEADER */}
         {data.header && (
-          <Modal.Header>
-            <h5 className="modal-title">{data.header}</h5>
-            {data.closable && (
-              <button
-                type="button"
-                onClick={activeCloseAction}
-                className="btn-close"
-                aria-label="Close"
-              ></button>
-            )}
-          </Modal.Header>
-        )}
-
-        {/* BODY */}
-        <Modal.Body className="position-relative">
-          {!data.header && data.closable && (
+          <Modal.Header closeButton={false}>
+            <h3 className="modal-title">{data.header}</h3>
             <button
-              onClick={activeCloseAction}
-              className="btn btn-sm btn-light btn-icon rounded-circle position-absolute end-0 top-0 m-2"
-              style={{ zIndex: 10 }}
+              onClick={data.onClose}
+              className="btn-close btn-close-white"
             >
               <i className="bi bi-x-lg"></i>
             </button>
+          </Modal.Header>
+        )}
+        <Modal.Body>
+          {!data.header && data.closable ? (
+            <div className="">
+              <button
+                onClick={data.onClose}
+                className="btn btn-sm btn-light btn-icon rounded-circle position-absolute end-0 top-0 fw-bolder m-2 text-hover-danger"
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+              {data.message}
+            </div>
+          ) : (
+            data.message
           )}
-          <div>{data.message}</div>
         </Modal.Body>
-
-        {/* FOOTER */}
         {data.footer && (
           <Modal.Footer>
             {data.closable && (
               <Button
                 variant="secondary"
                 outline
-                className="px-4 btn-sm"
-                onClick={activeCloseAction}
+                className="px-5"
+                onClick={() => handleEdit(book)}
+                title="Edit"
               >
-                Cancel
+                No
               </Button>
             )}
             {data.footer}
@@ -111,33 +99,57 @@ const Modals = () => {
   );
 };
 
+const ModalResponse = ({ title, message, variant = "success" }) => {
+  return (
+    <div className="text-center py-8">
+      <div className="icon">
+        <i
+          className={`bi bi-${variant === "success" ? "check2-circle text-success" : "x-circle text-danger"}`}
+          style={{ fontSize: "6em" }}
+        ></i>
+      </div>
+      {title && (
+        <h1 className={`text-${variant === "success" ? "success" : "danger"}`}>
+          {title}
+        </h1>
+      )}
+      {message && <p className="mb-10">{message}</p>}
+      <div className="my-5">
+        <Button
+          className="btn-lg fw-bolder"
+          onClick={() => openModal({ open: false })}
+        >
+          Ok, got it!
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const openModal = ({
   open = true,
-  message = "",
-  header = "",
-  size = "md",
-  footer = null,
+  message,
+  header,
+  size,
+  footer,
   onClose = () => {},
   closable = true,
 }) => {
-  if (!open) {
-    handleClose();
-    return;
-  }
-
-  modalRegistry.changeState({
-    open,
+  states.changeState({
     message,
     header,
     size,
+    open,
     footer,
     closable,
-    onClose: () => {
-      onClose(); // Jalankan callback custom jika ada
-      handleClose(); // Tutup modalnya
-    },
+    onClose: closable
+      ? () => {
+          onClose();
+          handleClose();
+        }
+      : undefined,
   });
 };
 
 export default Modals;
-export { openModal };
+export { openModal, ModalResponse };

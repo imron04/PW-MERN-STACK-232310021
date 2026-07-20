@@ -103,8 +103,8 @@ module.exports = (sequelize, DataTypes) => {
             msg: "Story cannot be empty",
           },
           len: {
-            args: [50],
-            msg: "Story must be at least 50 characters",
+            args: [10],
+            msg: "Story must be at least 10 characters",
           },
         },
       },
@@ -112,10 +112,41 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(500),
         allowNull: true,
         validate: {
-          isUrl: {
-            msg: "Image must be a valid URL",
+          isValidPath(value) {
+            if (value && !value.startsWith("/uploads/")) {
+              throw new Error(
+                "Image must be a valid file path starting with /uploads/",
+              );
+            }
+          },
+          isValidExtension(value) {
+            if (value) {
+              const validExtensions = [
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".webp",
+              ];
+              const hasValidExtension = validExtensions.some((ext) =>
+                value.toLowerCase().endsWith(ext),
+              );
+              if (!hasValidExtension) {
+                throw new Error(
+                  "Image must have a valid extension (jpg, jpeg, png, gif, webp)",
+                );
+              }
+            }
           },
         },
+      },
+      created_by: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      updated_by: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
       },
     },
     {

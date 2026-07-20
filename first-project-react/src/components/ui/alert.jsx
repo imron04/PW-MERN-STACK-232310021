@@ -1,5 +1,3 @@
-import React from "react";
-
 const Alert = ({ message, variant = "warning" }) => {
   return (
     <div
@@ -16,5 +14,4 @@ const Alert = ({ message, variant = "warning" }) => {
     </div>
   );
 };
-
 export { Alert };

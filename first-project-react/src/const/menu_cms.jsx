@@ -14,5 +14,10 @@ const Menu_CMS = [
     path: "/cms/users",
     icon: "bi-people",
   },
+  {
+    name: "Testing",
+    path: "/cms/testing",
+    icon: "/bi bi-body-text"
+  }
 ];
 export { Menu_CMS };

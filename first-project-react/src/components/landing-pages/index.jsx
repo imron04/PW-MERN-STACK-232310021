@@ -1,11 +1,11 @@
 import React from "react";
 import { Navbar } from "./components/navbar";
 import { HeroSection } from "./components/herosection";
-import { FeaturesSection } from "./components/featuredbookssection";
+import { FeaturesSection } from "./components/featuressection";
 import { ChooseUs } from "./components/chooseus";
-import { TestimonialSection } from "./components/testimonsection";
-import { Footers } from "./components/footers";
 import { CategoriesSection } from "./components/categoriessection";
+import { TestimonSection } from "./components/testimonsection";
+import { Footers } from "./components/footers";
 
 export default function LandingPages() {
   return (
@@ -14,8 +14,8 @@ export default function LandingPages() {
       <HeroSection />
       <ChooseUs />
       <FeaturesSection />
-      <TestimonialSection />
       <CategoriesSection />
+      <TestimonSection />
       <Footers />
     </div>
   );

@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Pagination } from "react-bootstrap";
-
 const HeaderDatatables = ({ headers, onSorting, ...others }) => {
   const [sortingField, setSortingField] = useState("");
   const [sortingOrder, setSortingOrder] = useState("asc");
-
   const onSortingChange = (field) => {
     const order =
       field === sortingField && sortingOrder === "asc" ? "desc" : "asc";
@@ -12,15 +10,13 @@ const HeaderDatatables = ({ headers, onSorting, ...others }) => {
     setSortingOrder(order);
     onSorting(field, order);
   };
-
   return (
     <thead>
-      <tr className="text-start fw-bold text-uppercase gs-0" {...others}>
-        {headers.map(({ name, field, sortable }) => (
+      <tr className="text-center fw-bold text-uppercase gs-0" {...others}>
+        {headers.map(({ name, field, sortable, className }) => (
           <th
             className={
-              "text-secondary fs-6 " +
-              (sortable === true ? "cursor-pointer" : "")
+              "text-secondary fs-6 " + (sortable === true ? "cursorpointer " : "") + (className || "")
             }
             key={name}
             onClick={() => (sortable ? onSortingChange(field) : null)}
@@ -40,7 +36,6 @@ const HeaderDatatables = ({ headers, onSorting, ...others }) => {
     </thead>
   );
 };
-
 const SearchInput = ({ keyword, onAction }) => {
   return (
     <div className="input-group">
@@ -57,7 +52,6 @@ const SearchInput = ({ keyword, onAction }) => {
     </div>
   );
 };
-
 const PaginationComponent = ({
   total = 0,
   itemsPerPage = 10,
@@ -66,12 +60,10 @@ const PaginationComponent = ({
   maxPageItems = 10,
 }) => {
   const [totalPages, setTotalPages] = useState(0);
-
   useEffect(() => {
     if (total > 0 && itemsPerPage > 0)
       setTotalPages(Math.ceil(total / itemsPerPage));
   }, [total, itemsPerPage]);
-
   const paginationItems = useMemo(() => {
     const pages = [];
     if (totalPages <= maxPageItems) {
@@ -89,11 +81,9 @@ const PaginationComponent = ({
     } else {
       let startPage = Math.max(1, currentPage - Math.floor(maxPageItems / 2));
       let endPage = Math.min(totalPages, startPage + maxPageItems - 1);
-
       if (endPage === totalPages) {
         startPage = Math.max(1, endPage - maxPageItems + 1);
       }
-
       if (startPage > 1) {
         pages.push(
           <Pagination.Item
@@ -108,7 +98,6 @@ const PaginationComponent = ({
           pages.push(<Pagination.Ellipsis key="ellipsis-start" disabled />);
         }
       }
-
       for (let i = startPage; i <= endPage; i++) {
         pages.push(
           <Pagination.Item
@@ -120,7 +109,6 @@ const PaginationComponent = ({
           </Pagination.Item>,
         );
       }
-
       if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
           pages.push(<Pagination.Ellipsis key="ellipsis-end" disabled />);
@@ -137,10 +125,8 @@ const PaginationComponent = ({
       }
     }
     return pages;
-  }, [totalPages, currentPage, maxPageItems, onPageChange]);
-
+  }, [totalPages, currentPage, maxPageItems]);
   if (totalPages === 0) return null;
-
   return (
     <Pagination>
       <Pagination.First
@@ -163,5 +149,4 @@ const PaginationComponent = ({
     </Pagination>
   );
 };
-
 export { HeaderDatatables, SearchInput, PaginationComponent };

@@ -3,9 +3,13 @@ const CardCalculates = ({ title, value, icon }) => {
   return (
     <Cards>
       <Cards.Body>
-        <div className="d-flex justify-content-between align-itemscenter">
+        <div className="d-flex justify-content-between align-items-center">
           <div>
-            <p className="text-muted mb-1 small">{title}</p>
+            <p
+              className="text-muted mb-1 small"
+            >
+              {title}
+            </p>
             <h4 className="mb-0" style={{ color: "#437059" }}>
               {value}
             </h4>

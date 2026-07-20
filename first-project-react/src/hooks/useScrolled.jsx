@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+
 export default function useScrolled(threshold = 10) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {

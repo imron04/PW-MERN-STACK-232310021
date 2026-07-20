@@ -1,17 +1,10 @@
-import React from "react";
-const genre_data = [
-  { name: "Fiction", icon: "bi-book", color: "primary" },
-  { name: "Science", icon: "bi-flask", color: "success" },
-  { name: "History", icon: "bi-journal-bookmark", color: "warning" },
-  { name: "Fantasy", icon: "bi-magic", color: "info" },
-  { name: "Mystery", icon: "bi-incognito", color: "dark" },
-  { name: "Romance", icon: "bi-heart", color: "danger" },
-];
+import React from 'react'
 
 export function CategoriesSection() {
   return (
     <section id="categories" className="py-5 bg-light">
       <div className="container">
+        
         <div className="row mb-5">
           <div className="col">
             <h2 className="fw-bold text-center">Browse by Category</h2>
@@ -24,9 +17,7 @@ export function CategoriesSection() {
         <div className="row g-3">
           {genre_data.map((category, index) => (
             <div key={index} className="col-md-4 col-lg-2">
-              <div
-                className={`card text-center border-${category.color} h-100`}
-              >
+              <div className={`card text-center border-${category.color} h-100`}>
                 <div className="card-body">
                   <i
                     className={`bi ${category.icon} text-${category.color}`}
@@ -38,7 +29,17 @@ export function CategoriesSection() {
             </div>
           ))}
         </div>
+
       </div>
     </section>
-  );
+  )
 }
+
+const genre_data = [ 
+    { name: "Fiction", icon: "bi-journal-text", color: "primary" }, 
+    { name: "Non-Fiction", icon: "bi-newspaper", color: "success" }, 
+    { name: "Science", icon: "bi-lightbulb", color: "info" }, 
+    { name: "History", icon: "bi-clock-history", color: "warning" }, 
+    { name: "Biography", icon: "bi-person", color: "danger" }, 
+    { name: "Children", icon: "bi-balloon", color: "secondary" }, 
+]; 

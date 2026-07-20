@@ -1,5 +1,6 @@
-const ALLOWED_PATTERN =
-  /^[a-zA-Z0-9\s.,!?@#$%&*()\-_+=:;"'<>\/\[\]{}|\\~`]*$/;
+import { useState } from "react";
+
+const ALLOWED_PATTERN = /^[a-zA-Z0-9\s.,!?@#$%&*()\-_+=:;"'<>\/\[\]{}|\\~`]*$/;
 
 const validateInput = (value) => {
   return ALLOWED_PATTERN.test(value);
@@ -14,17 +15,47 @@ const sanitizeInput = (value) => {
 
 const LableTitle = ({ title, required }) => {
   return (
-    <label className={`form-label fw-semibold ${required ? "required" : ""}`}>
+    <label className={`form-label fw-semibold mb-0 ${required && "required"}`}>
       {title}
     </label>
   );
 };
-
 const TextInput = ({ title, required, ...props }) => {
   return (
     <div className="form-group mb-3">
       {title && <LableTitle title={title} required={required} />}
-      <input type="text" required={required} className="form-control" {...props} />
+      <input
+        type="text"
+        required={required}
+        className="form-control"
+        {...props}
+      />
+    </div>
+  );
+};
+
+const TextInputPassword = ({ title, required, ...props }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  return (
+    <div className="form-group mb-3">
+      {title && <LableTitle title={title} required={required} />}
+      <div className="password-input-wrapper">
+        <input
+          type={showPassword ? "text" : "password"}
+          id="password"
+          name="password"
+          autoComplete="off"
+          {...props}
+        />
+        <button
+          type="button"
+          className="password-toggle-btn"
+          onClick={() => setShowPassword(!showPassword)}
+          aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+          <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+        </button>
+      </div>
     </div>
   );
 };
@@ -33,7 +64,11 @@ const TextAreaInput = ({ title, required, ...props }) => {
   return (
     <div className="form-group mb-3">
       {title && <LableTitle title={title} required={required} />}
-      <textarea required={required} className="form-control" {...props}></textarea>
+      <textarea
+        required={required}
+        className="form-control"
+        {...props}
+      ></textarea>
     </div>
   );
 };
@@ -48,13 +83,8 @@ const InputCheckbox = ({
   return (
     <div className="form-group">
       {title && <LableTitle title={title} required={required} />}
-      <div className={`form-check ${is_switch ? "form-switch" : ""}`}>
-        <input
-          type="checkbox"
-          className="form-check-input"
-          required={required}
-          {...props}
-        />
+      <div className={`"form-check ${is_switch ? "form-switch" : ""}`}>
+        <input type="checkbox" className="form-check-input" {...props} />
         <label className="form-check-label ms-1">{value}</label>
       </div>
     </div>
@@ -96,6 +126,7 @@ export {
   validateInput,
   sanitizeInput,
   TextInput,
+  TextInputPassword,
   TextAreaInput,
   InputCheckbox,
   InputImage,

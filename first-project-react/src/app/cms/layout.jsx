@@ -1,25 +1,16 @@
 import Sidebar from "@/components/cms/components/sidebar";
 import Modals from "@/components/ui/modals";
+import "./cms.css";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 export default function CMSLayout({ children }) {
   return (
-    <>
-      {/* Mengunci container utama agar tingginya pas se-layar browser */}
-      <div
-        className="cms-container d-flex w-100"
-        style={{ height: "100vh", overflow: "hidden" }}
-      >
-        {/* Sidebar sudah terkunci 100vh di dalamnya */}
+    <ProtectedRoute>
+      <div className="cms-container">
         <Sidebar />
-
-        {/* PERBAIKAN: overflow-y-auto di sini membuat hanya area konten data buku saja yang bisa di-scroll */}
-        <main
-          className="main-content p-4 flex-grow-1 w-100 bg-light"
-          style={{ overflowY: "auto" }}
-        >
-          {children}
-        </main>
+        <main className="main-content p-4">{children}</main>
       </div>
       <Modals />
-    </>
+    </ProtectedRoute>
   );
 }

@@ -1,87 +1,61 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { Cards } from "@/components/ui/cards";
-import { Button } from "@/components/ui/buttons";
+import { Button } from "@/components/ui/button";
 import {
   HeaderDatatables,
   SearchInput,
   PaginationComponent,
 } from "@/components/ui/datatables";
-
-export default function Tabledata({ data = [] }) {
+export default function Tabledata({ data }) {
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [totalitems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
-
   const table_headers = [
-    { name: "No", field: "id", sortable: false },
+    { name: "No", field: "id", sortable: false, className: "text-center" },
     { name: "Title", field: "title", sortable: true },
     { name: "Author", field: "author", sortable: true },
     { name: "Language", field: "language", sortable: true },
     { name: "Rate/View", field: "rate", sortable: false },
-    { name: "Subscribe", field: "is_free", sortable: true },
+    { name: "Subscribe", field: "is_free", sortable: true, className: "text-center" },
     { name: "Actions", field: "id", sortable: false },
   ];
-
-  // Placeholder fungsi aksi agar tidak error
-  const handleEdit = (book) => {
-    console.log("Edit book:", book);
-  };
-
-  const handleDelete = (id) => {
-    console.log("Delete book ID:", id);
-  };
-
-  // 1. Filter Data berdasarkan Search
-  const filteredData = useMemo(() => {
-    if (!search) return data;
-
-    return data.filter((listData) => {
-      return Object.keys(listData).some((key) => {
-        try {
-          const value = listData[key];
-          return (
-            value != null &&
-            String(value).toLowerCase().includes(search.toLowerCase())
-          );
-        } catch (error) {
-          console.error(`Error processing key "${key}":`, error);
-          return false;
-        }
-      });
-    });
-  }, [data, search]);
-
-  // 2. Hitung Total Items dari hasil filter (menghindari infinite loop)
-  const totalItems = filteredData.length;
-
-  // Reset ke halaman 1 jika user mengetik pencarian baru
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
-
-  // 3. Sort dan Paginate Data
   const ResultData = useMemo(() => {
-    let computedData = [...filteredData]; // Gunakan spread operator agar tidak merusak data asli
-
-    // Proses Sorting
-    if (sorting.field) {
-      const reversed = sorting.order === "asc" ? 1 : -1;
-      computedData.sort((a, b) => {
-        const valA = String(a[sorting.field] || "");
-        const valB = String(b[sorting.field] || "");
-        return reversed * valA.localeCompare(valB);
+    let computedData = data;
+    if (search) {
+      computedData = computedData.filter((listData) => {
+        return Object.keys(listData).some((key) => {
+          try {
+            const value = listData[key];
+            return (
+              value != null &&
+              String(value).toLowerCase().includes(search.toLowerCase())
+            );
+          } catch (error) {
+            console.error(`Error processing key "${key}":`, error);
+            return false;
+          }
+        });
       });
     }
-
-    // Proses Pagination
-    return computedData.slice(
-      (currentPage - 1) * ITEMS_PER_PAGE,
-      (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE,
-    );
-  }, [filteredData, sorting, currentPage]);
-
+    setTotalItems(computedData.length);
+    if (sorting.field) {
+      const reversed = sorting.order === "asc" ? 1 : -1;
+      computedData = computedData.sort(
+        (a, b) => reversed * a[sorting.field].localeCompare(b[sorting.field]),
+      );
+    }
+    if (computedData.length > 0) {
+      return computedData.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE,
+      );
+    } else {
+      return [];
+    }
+  }, [data, search, sorting, currentPage]);
   return (
     <Cards>
       <Cards.Header>
@@ -93,17 +67,22 @@ export default function Tabledata({ data = [] }) {
           />
         </div>
       </Cards.Header>
-      <Cards.Body className="px-0 pb-0">
+      <Cards.Body className={`px-0 pb-0`}>
         <div className="table-responsive">
           <table className="table table-hover">
             <HeaderDatatables
               headers={table_headers}
-              onSorting={(field, order) => setSorting({ field, order })}
+              onSorting={(field, order) =>
+                setSorting({
+                  field,
+                  order,
+                })
+              }
             />
             <tbody>
               {ResultData.length > 0 ? (
                 ResultData.map((book, index) => (
-                  <tr key={book.id || index}>
+                  <tr key={book.id}>
                     <td className="text-center">
                       {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                     </td>
@@ -111,29 +90,27 @@ export default function Tabledata({ data = [] }) {
                       <strong>{book.title}</strong>
                     </td>
                     <td>{book.author}</td>
-                    <td>{book.language}</td>
+                    <td className="text-center">{book.language}</td>
                     <td>
-                      <div className="d-flex">
+                      <div className="d-flex justify-content-center">
                         <div className="me-3">
                           <i className="bi bi-star-fill text-warning"></i>
-                          <span className="text-dark ms-1">
-                            {book.rating || 0}
-                          </span>
+                          <span className="text-dark ms-1">{book.rating}</span>
                         </div>
                         <div className="me-3">
-                          <i className="bi bi-eye text-info"></i>
-                          <span className="text-dark ms-1">
-                            {book.views || 0}
-                          </span>
+                          <i
+                            className="bi bi-eye text-info"
+                          ></i>
+                          <span className="text-dark ms-1">{book.views}</span>
                         </div>
                       </div>
                     </td>
-                    <td>
+                    <td className="text-center">
                       <span className="badge bg-secondary">
                         {book.is_free ? "Yes" : "No"}
                       </span>
                     </td>
-                    <td className="text-end">
+                    <td className="text-center">
                       <Button
                         variant="warning"
                         outline
@@ -157,19 +134,23 @@ export default function Tabledata({ data = [] }) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-5">
-                    <i className="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                  <td
+                    colSpan="7"
+                    className="text-center py-5"
+                  >
+                    <i
+                      className="bi bi-inbox fs-1 text-muted d-block mb-3"
+                    ></i>
                     <p className="text-muted mb-0">No books found</p>
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-
-          {totalItems > 0 && (
-            <div className="d-flex align-items-center justify-content-center my-4">
+          {totalitems > 0 && (
+            <div className="d-flex align-items-center justify-content-center">
               <PaginationComponent
-                total={totalItems}
+                total={totalitems}
                 itemsPerPage={ITEMS_PER_PAGE}
                 currentPage={currentPage}
                 onPageChange={(page) => setCurrentPage(page)}
